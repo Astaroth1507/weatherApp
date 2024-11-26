@@ -84,7 +84,10 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
-          title: Text(widget.city),
+          title: Text(
+            widget.city,
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
         body: isLoading
             ? const Center(
@@ -105,30 +108,37 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(24.0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    _getWeatherIcon(
-                                        weatherData!['weather'][0]['main']),
-                                    style: const TextStyle(fontSize: 80),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    '${weatherData!['main']['temp'].round()}°C',
-                                    style: TextStyle(
-                                      fontSize: 48,
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).primaryColor,
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      _getWeatherIcon(
+                                          weatherData!['weather'][0]['main']),
+                                      style: const TextStyle(fontSize: 80),
+                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                  Text(
-                                    '${weatherData!['weather'][0]['description']}',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.grey[700],
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      '${weatherData!['main']['temp'].round()}°C',
+                                      style: TextStyle(
+                                        fontSize: 48,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                ],
+                                    Text(
+                                      '${weatherData!['weather'][0]['description']}',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.grey[700],
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -182,8 +192,7 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
                                     'Amanecer',
                                     formatUnixTimeWithTimezone(
                                       weatherData!['sys']['sunrise'],
-                                      weatherData![
-                                          'timezone'], // Ajuste basado en el timezone de la ciudad
+                                      weatherData!['timezone'],
                                     ),
                                     Icons.wb_twilight,
                                   ),
@@ -192,8 +201,7 @@ class _WeatherDetailsPageState extends State<WeatherDetailsPage> {
                                     'Atardecer',
                                     formatUnixTimeWithTimezone(
                                       weatherData!['sys']['sunset'],
-                                      weatherData![
-                                          'timezone'], // Ajuste basado en el timezone de la ciudad
+                                      weatherData!['timezone'],
                                     ),
                                     Icons.landscape,
                                   ),
