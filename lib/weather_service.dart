@@ -11,8 +11,11 @@ class WeatherService {
       throw Exception('API_KEY no encontrada en el archivo .env');
     }
 
+    // Eliminar tildes y codificar la URL
+    final cityEncoded = Uri.encodeComponent(_removeAccents(city));
+
     final url =
-        Uri.parse('$baseUrl?q=$city&appid=$apiKey&units=metric&lang=es');
+        Uri.parse('$baseUrl?q=$cityEncoded&appid=$apiKey&units=metric&lang=es');
 
     try {
       final response = await http.get(url);
@@ -24,5 +27,29 @@ class WeatherService {
     } catch (e) {
       throw Exception('Error al conectarse al API: $e');
     }
+  }
+
+  // Método para eliminar tildes
+  String _removeAccents(String input) {
+    const Map<String, String> accentMap = {
+      'á': 'a',
+      'é': 'e',
+      'í': 'i',
+      'ó': 'o',
+      'ú': 'u',
+      'Á': 'A',
+      'É': 'E',
+      'Í': 'I',
+      'Ó': 'O',
+      'Ú': 'U',
+      'ñ': 'n',
+      'Ñ': 'N'
+    };
+
+    return input.splitMapJoin(
+      RegExp(r'[áéíóúÁÉÍÓÚñÑ]'),
+      onMatch: (m) => accentMap[m.group(0)] ?? m.group(0)!,
+      onNonMatch: (n) => n,
+    );
   }
 }

@@ -15,9 +15,34 @@ class _AddCityPageState extends State<AddCityPage> {
   final WeatherService weatherService = WeatherService();
   bool isLoading = false;
 
+  // Función para eliminar tildes
+  String _removeAccents(String input) {
+    const accents = {
+      'á': 'a',
+      'é': 'e',
+      'í': 'i',
+      'ó': 'o',
+      'ú': 'u',
+      'Á': 'A',
+      'É': 'E',
+      'Í': 'I',
+      'Ó': 'O',
+      'Ú': 'U',
+      'ñ': 'n',
+      'Ñ': 'N'
+    };
+
+    return input.replaceAllMapped(RegExp(r'[áéíóúÁÉÍÓÚñÑ]'), (match) {
+      return accents[match.group(0)] ?? match.group(0)!;
+    });
+  }
+
   Future<void> validateAndAddCity(BuildContext context) async {
-    final city = cityController.text;
+    final city = cityController.text.trim();
     if (city.isEmpty) return;
+
+    // Eliminar tildes del nombre de la ciudad
+    final cityWithoutAccents = _removeAccents(city);
 
     setState(() {
       isLoading = true;
@@ -25,7 +50,7 @@ class _AddCityPageState extends State<AddCityPage> {
 
     try {
       // Intentar obtener el clima para verificar si la ciudad existe
-      await weatherService.getWeather(city);
+      await weatherService.getWeather(cityWithoutAccents);
 
       // Si no hay error, la ciudad existe
       widget.onAddCity(city);
@@ -53,6 +78,7 @@ class _AddCityPageState extends State<AddCityPage> {
 
   @override
   Widget build(BuildContext context) {
+    // El resto del código permanece igual
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(

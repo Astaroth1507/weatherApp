@@ -17,7 +17,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
     'Madrid',
     'Paris',
     'New York',
-    'Guatemala',
+    'Rusia',
     'Rio de Janeiro',
     'Tokio',
     'Lisboa'
@@ -51,7 +51,7 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
 
           setState(() {
             // Si no se encuentra la localidad, usar la ciudad administrativa
-            currentLocationCity = city ?? 'Ubicación Desconocida';
+            currentLocationCity = city ?? '';
             _isLoading = false;
           });
         } else {
@@ -104,9 +104,12 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
               ),
             ),
             bottom: const TabBar(
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(text: 'Mi Ubicación'),
-                Tab(text: 'Mis Ciudades'),
+                Tab(text: 'Ciudades favoritas'),
               ],
             ),
           ),
@@ -159,7 +162,6 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
           );
   }
 
-  // El método _buildCitiesView permanece igual que en el código anterior
   Widget _buildCitiesView() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -178,16 +180,28 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
+            child: ReorderableListView.builder(
               itemCount: cities.length,
               itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
+                return Card(
+                  key: ValueKey(cities[index]),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(15),
+                    highlightColor: Colors.black12,
+                    splashColor: Colors.black26,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              WeatherDetailsPage(city: cities[index]),
+                        ),
+                      );
+                    },
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 20,
@@ -206,20 +220,38 @@ class _WeatherHomePageState extends State<WeatherHomePage> {
                         ),
                       ),
                       trailing: Icon(
-                        Icons.arrow_forward_ios,
+                        Icons.reorder,
                         color: Theme.of(context).primaryColor,
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                WeatherDetailsPage(city: cities[index]),
-                          ),
-                        );
-                      },
                     ),
                   ),
+                );
+              },
+              onReorder: (int oldIndex, int newIndex) {
+                setState(() {
+                  if (newIndex > oldIndex) {
+                    newIndex -= 1;
+                  }
+                  final String city = cities.removeAt(oldIndex);
+                  cities.insert(newIndex, city);
+                });
+              },
+              proxyDecorator:
+                  (Widget child, int index, Animation<double> animation) {
+                return AnimatedBuilder(
+                  animation: animation,
+                  builder: (BuildContext context, Widget? child) {
+                    return Material(
+                      elevation: 8,
+                      color: Colors.transparent,
+                      shadowColor: Colors.black26,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: child,
+                    );
+                  },
+                  child: child,
                 );
               },
             ),
